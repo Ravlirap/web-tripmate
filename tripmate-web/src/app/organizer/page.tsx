@@ -134,45 +134,55 @@ export default function OrganizerDashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#f8f9ff] flex">
-      {/* ─── SIDEBAR (Fixed 260px) ─── */}
-      <aside className="w-[260px] bg-admin-sidebar text-zinc-400 flex flex-col flex-shrink-0 sticky top-0 h-screen z-20 border-r border-zinc-800/30">
+      {/* ─── SIDEBAR (Fixed 260px, light theme per design system — dark sidebar is Admin-only) ─── */}
+      <aside className="w-[260px] bg-surface-container text-on-surface-variant flex flex-col flex-shrink-0 sticky top-0 h-screen z-20 border-r border-outline-variant">
         {/* Brand */}
-        <div className="h-16 flex items-center gap-2.5 px-6 border-b border-zinc-850">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-container shadow-md shadow-primary/30">
-            <MapPin className="h-5 w-5 text-white" />
-          </div>
-          <span className="text-xl font-bold text-white tracking-tight">TripMate</span>
+        <div className="px-6 pt-6 pb-4">
+          <h1 className="text-xl font-bold text-primary">TripMate</h1>
+          <p className="text-[11px] font-semibold text-on-surface-variant/70 mt-1 uppercase tracking-wider">
+            Organizer Portal
+          </p>
         </div>
-        
+
         {/* Navigation links */}
-        <nav className="flex-1 px-4 py-6 space-y-1">
-          <Link href="/organizer" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold bg-primary/10 text-white transition-all">
-            <LayoutDashboard className="h-4 w-4 text-primary" />
+        <nav className="flex-1 px-4 py-2 space-y-1">
+          <Link href="/organizer" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold bg-primary text-white shadow-sm transition-all">
+            <LayoutDashboard className="h-4 w-4" />
             Dashboard
           </Link>
-          <Link href="/organizer/trips" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium hover:bg-zinc-800/40 hover:text-white transition-all">
+          <Link href="/organizer/trips" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-on-surface-variant hover:bg-surface-container-high transition-all">
             <ListChecks className="h-4 w-4" />
             Kelola Trip
           </Link>
-          <Link href="/organizer/bookings" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium hover:bg-zinc-800/40 hover:text-white transition-all">
+          <Link href="/organizer/bookings" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-on-surface-variant hover:bg-surface-container-high transition-all">
             <BookOpen className="h-4 w-4" />
             Daftar Booking
           </Link>
-          <Link href="/trips" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium hover:bg-zinc-800/40 hover:text-white transition-all">
+          <Link href="/trips" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-on-surface-variant hover:bg-surface-container-high transition-all">
             <Compass className="h-4 w-4" />
             Explore Trip Page
           </Link>
         </nav>
-        
+
+        {/* CTA */}
+        <div className="px-4 pb-2">
+          <Button className="w-full bg-primary hover:bg-primary/90 text-white rounded-xl shadow-sm" asChild>
+            <Link href="/organizer/trips/new">
+              <Plus className="mr-1.5 h-4 w-4" />
+              Tambah Trip Baru
+            </Link>
+          </Button>
+        </div>
+
         {/* Sidebar user area */}
-        <div className="p-4 border-t border-zinc-850">
-          <div className="flex items-center gap-3 bg-zinc-900 p-3 rounded-xl border border-zinc-800/45">
+        <div className="p-4 border-t border-outline-variant">
+          <div className="flex items-center gap-3 bg-white p-3 rounded-xl border border-outline-variant">
             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white text-sm font-bold">
               O
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-white leading-none truncate">Organizer Mode</p>
-              <span className="text-[10px] text-zinc-500 font-medium">Trip Manager</span>
+              <p className="text-xs font-semibold text-on-surface leading-none truncate">Organizer Mode</p>
+              <span className="text-[10px] text-on-surface-variant/70 font-medium">Trip Manager</span>
             </div>
           </div>
         </div>
@@ -203,6 +213,23 @@ export default function OrganizerDashboardPage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
             {stats.map((s, i) => {
               const Icon = s.icon;
+              const isPendingCard = s.label === "Menunggu Konfirmasi";
+              if (isPendingCard) {
+                // Highlighted per Stitch design — pending needs immediate attention
+                return (
+                  <div key={i} className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-5 shadow-sm relative overflow-hidden">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="text-2xl font-bold text-amber-600 mb-1">{s.value}</div>
+                        <div className="text-xs text-amber-700 font-medium">{s.label}</div>
+                      </div>
+                      <div className="p-2.5 rounded-xl bg-amber-500 text-white shadow-lg animate-pulse">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
               return (
                 <div key={i} className={`bg-white rounded-2xl p-5 shadow-sm border ${s.border}`}>
                   <div className={`inline-flex p-2.5 rounded-xl ${s.bg} mb-3`}>
@@ -309,35 +336,56 @@ export default function OrganizerDashboardPage() {
                   {recentBookings.map((booking) => {
                     const cfg = BOOKING_STATUS[booking.status];
                     const StatusIcon = cfg.icon;
+                    const isPending = booking.status === "pending";
                     return (
                       <div
                         key={booking.id}
-                        className="flex items-center gap-3 p-3 rounded-xl border border-zinc-100 hover:bg-zinc-50 transition-colors"
+                        className={`p-3 rounded-xl border transition-colors ${
+                          isPending ? "border-amber-200 bg-amber-50/40" : "border-zinc-100 hover:bg-zinc-50"
+                        }`}
                       >
-                        {/* Initials Avatar */}
-                        <div
-                          className="h-9 w-9 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-                          style={{ background: `hsl(${booking.id.charCodeAt(2) * 20}, 60%, 50%)` }}
-                        >
-                          {booking.travelerName.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+                        <div className="flex items-center gap-3">
+                          {/* Initials Avatar */}
+                          <div
+                            className="h-9 w-9 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
+                            style={{ background: `hsl(${booking.id.charCodeAt(2) * 20}, 60%, 50%)` }}
+                          >
+                            {booking.travelerName.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+                          </div>
+
+                          {/* Info */}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-xs text-[#0b1c30] truncate">{booking.travelerName}</p>
+                            <p className="text-[10px] text-zinc-400 truncate">{booking.tripTitle}</p>
+                          </div>
+
+                          {/* Status & Price */}
+                          <div className="text-right flex-shrink-0">
+                            <p className="font-bold text-xs text-primary">
+                              Rp {(booking.price * booking.participants).toLocaleString("id-ID")}
+                            </p>
+                            {!isPending && (
+                              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border mt-1 text-[9px] font-semibold ${cfg.bg}`}>
+                                <StatusIcon className="h-2.5 w-2.5" />
+                                {cfg.label}
+                              </span>
+                            )}
+                          </div>
                         </div>
 
-                        {/* Info */}
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-xs text-[#0b1c30] truncate">{booking.travelerName}</p>
-                          <p className="text-[10px] text-zinc-400 truncate">{booking.tripTitle}</p>
-                        </div>
-
-                        {/* Status & Price */}
-                        <div className="text-right flex-shrink-0">
-                          <p className="font-bold text-xs text-primary">
-                            Rp {(booking.price * booking.participants).toLocaleString("id-ID")}
-                          </p>
-                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border mt-1 text-[9px] font-semibold ${cfg.bg}`}>
-                            <StatusIcon className="h-2.5 w-2.5" />
-                            {cfg.label}
-                          </span>
-                        </div>
+                        {/* Actionable Confirm/Reject — only for pending bookings, per design brief */}
+                        {isPending && (
+                          <div className="flex gap-2 mt-3">
+                            <button className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-700 text-[11px] font-semibold hover:bg-emerald-500 hover:text-white transition-all">
+                              <CheckCircle2 className="h-3.5 w-3.5" />
+                              Confirm
+                            </button>
+                            <button className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg bg-red-500/10 text-red-600 text-[11px] font-semibold hover:bg-red-500 hover:text-white transition-all">
+                              <XCircle className="h-3.5 w-3.5" />
+                              Reject
+                            </button>
+                          </div>
+                        )}
                       </div>
                     );
                   })}

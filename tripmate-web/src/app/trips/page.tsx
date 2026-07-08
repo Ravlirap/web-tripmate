@@ -159,63 +159,36 @@ export default function ExploreTripsPage() {
   return (
     <div className="min-h-screen bg-[#f8f9ff]">
       {/* ─── HEADER ─── */}
-      <div className="bg-gradient-to-b from-[#006591] to-[#0084b8] text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-3" style={{ letterSpacing: "-0.02em" }}>
-            Jelajahi Open Trip
+      <div className="bg-background pt-10 pb-6">
+        <div className="container mx-auto px-4">
+          <h1 className="text-4xl md:text-5xl font-bold mb-2 text-[#0b1c30]" style={{ letterSpacing: "-0.02em" }}>
+            Find your next adventure
           </h1>
-          <p className="text-white/70 text-lg mb-8">
-            {allTrips.length}+ trip menakjubkan menanti Anda
+          <p className="text-zinc-500 text-lg mb-6">
+            Explore curated trips from top-rated local organizers worldwide.
           </p>
 
-          {/* Search bar */}
-          <div className="max-w-2xl mx-auto relative">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400" />
-            <input
-              type="text"
-              placeholder="Cari destinasi, judul trip, atau organizer..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white text-zinc-800 rounded-2xl py-4 pl-14 pr-5 text-sm shadow-xl focus:outline-none focus:ring-2 focus:ring-[#fd761a]/50"
-            />
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm("")}
-                className="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
+          {/* Bento-style search & filters — matches Stitch Explore Trips layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 bg-white p-3 rounded-2xl border border-zinc-200/70 shadow-sm">
+            {/* Search Input */}
+            <div className="lg:col-span-5 relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+              <input
+                type="text"
+                placeholder="Where do you want to go?"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 bg-[#f8f9ff] border-none rounded-xl ring-1 ring-zinc-200 focus:ring-2 focus:ring-primary outline-none transition-all text-sm"
+              />
+            </div>
 
-      <div className="container mx-auto px-4 py-8">
-        {/* ─── FILTER BAR ─── */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-zinc-500 font-medium">
-              {filtered.length} trip ditemukan
-            </span>
-            {hasActiveFilters && (
-              <button
-                onClick={clearFilters}
-                className="flex items-center gap-1 text-xs text-red-500 hover:text-red-700 font-medium"
-              >
-                <X className="h-3 w-3" />
-                Reset Filter
-              </button>
-            )}
-          </div>
-
-          <div className="flex items-center gap-3 flex-wrap">
             {/* Province filter */}
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+            <div className="lg:col-span-4 relative">
+              <Filter className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
               <select
                 value={filterProvince}
                 onChange={(e) => setFilterProvince(e.target.value)}
-                className="appearance-none bg-white border border-zinc-200 rounded-xl py-2.5 pl-9 pr-8 text-sm text-zinc-700 focus:outline-none focus:ring-2 focus:ring-primary/30 cursor-pointer"
+                className="w-full appearance-none pl-11 pr-4 py-3 bg-[#f8f9ff] border-none rounded-xl ring-1 ring-zinc-200 focus:ring-2 focus:ring-primary outline-none transition-all text-sm cursor-pointer"
               >
                 <option value="">Semua Provinsi</option>
                 {provinces.map((p) => (
@@ -225,12 +198,12 @@ export default function ExploreTripsPage() {
             </div>
 
             {/* Sort */}
-            <div className="relative">
-              <SlidersHorizontal className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+            <div className="lg:col-span-3 relative">
+              <SlidersHorizontal className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="appearance-none bg-white border border-zinc-200 rounded-xl py-2.5 pl-9 pr-8 text-sm text-zinc-700 focus:outline-none focus:ring-2 focus:ring-primary/30 cursor-pointer"
+                className="w-full appearance-none pl-11 pr-4 py-3 bg-[#f8f9ff] border-none rounded-xl ring-1 ring-zinc-200 focus:ring-2 focus:ring-primary outline-none transition-all text-sm cursor-pointer"
               >
                 <option value="popular">Terpopuler</option>
                 <option value="rating">Rating Tertinggi</option>
@@ -239,6 +212,41 @@ export default function ExploreTripsPage() {
               </select>
             </div>
           </div>
+
+          {/* Quick filter chips */}
+          <div className="flex flex-wrap gap-2 mt-4">
+            {provinces.map((p) => (
+              <button
+                key={p}
+                onClick={() => setFilterProvince(filterProvince === p ? "" : p)}
+                className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                  filterProvince === p
+                    ? "bg-primary-container text-on-primary-container"
+                    : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8">
+        {/* ─── RESULT COUNT / RESET ─── */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <span className="text-sm text-zinc-500 font-medium">
+            {filtered.length} trip ditemukan
+          </span>
+          {hasActiveFilters && (
+            <button
+              onClick={clearFilters}
+              className="flex items-center gap-1 text-xs text-red-500 hover:text-red-700 font-medium"
+            >
+              <X className="h-3 w-3" />
+              Reset Filter
+            </button>
+          )}
         </div>
 
         {/* ─── TRIP GRID ─── */}
